@@ -6,10 +6,12 @@ import androidx.cardview.widget.CardView;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.gson.JsonObject;
@@ -54,27 +56,47 @@ public class MainActivity extends AppCompatActivity {
         CardView card = new CardView(this);
         ImageView movie_cover = new ImageView(this);
         TextView movie_title = new TextView(this);
+        LinearLayout linearLayout = new LinearLayout(this);
         int dp1 = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1,
                 this.getResources().getDisplayMetrics());
-        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-                dp1*400,
-                dp1*400
+        CardView.LayoutParams params = new CardView.LayoutParams(
+                dp1*170,
+                dp1*270
+        );
+        ViewGroup.LayoutParams params1 = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                dp1*220
         );
         ViewGroup.LayoutParams params2 = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
+                dp1*50
+        );
+        ViewGroup.LayoutParams params3 = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
         );
-        card.setLayoutParams(params2);
-        movie_cover.setLayoutParams(params2);
+        params.setMargins(5, 5, 5, 5);
+        params.bottomMargin =5;
+        params.topMargin = 10;
+        //card.requestLayout();
+        card.setLayoutParams(params);
+        card.setRadius(10);
+        card.setPadding(0,0,0,0);
+        movie_cover.setLayoutParams(params1);
+        movie_cover.setScaleType(ImageView.ScaleType.CENTER_CROP);
         movie_title.setLayoutParams(params2);
+        movie_title.setTextSize(12);
+        movie_title.setGravity(Gravity.CENTER);
+        linearLayout.setLayoutParams(params3);
+        linearLayout.setOrientation(LinearLayout.VERTICAL);
+        linearLayout.addView(movie_cover);
+        linearLayout.addView(movie_title);
         GridLayout grid = findViewById(R.id.grid_main);
-        ViewGroup views = (ViewGroup) grid;
-        //card.addView(movie_cover);
-        //card.addView(movie_title);
-        grid.addView(movie_cover);
+        card.addView(linearLayout);
+        grid.addView(card);
         Picasso.get()
                 .load("https://image.tmdb.org/t/p/w500"+url)
                 .into(movie_cover);
-        //movie_title.setText(title);
+        movie_title.setText(title);
     }
 }
