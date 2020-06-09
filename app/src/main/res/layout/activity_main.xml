@@ -27,7 +27,9 @@
         android:padding="10dp"
         android:background="@drawable/edit_text_border"
         android:hint="Search here..."
-        android:inputType="text"/>
+        android:inputType="text"
+        android:id="@+id/movie_search"
+        />
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

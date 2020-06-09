@@ -3,7 +3,9 @@ package com.michaellangat.movieapp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -43,16 +45,18 @@ public class MainActivity extends AppCompatActivity {
                                 JSONObject movie = movies.getJSONObject(i);
                                 String movie_title = movie.getString("original_title");
                                 String movie_poster_url = movie.getString("poster_path");
-                                loadImage(movie_title, movie_poster_url);
+                                loadImage(movie_title, movie_poster_url, movie);
                             }
                         } catch (JSONException jsone){
                             Log.d("Json", "Json error", jsone);
                         }
                     }
                 });
+        TextView searchBox = (TextView) findViewById(R.id.movie_search);
     }
 
-    public void loadImage(String title, String url) {
+
+    public void loadImage(String title, String url, JSONObject movie ) {
         CardView card = new CardView(this);
         ImageView movie_cover = new ImageView(this);
         TextView movie_title = new TextView(this);
@@ -98,5 +102,13 @@ public class MainActivity extends AppCompatActivity {
                 .load("https://image.tmdb.org/t/p/w500"+url)
                 .into(movie_cover);
         movie_title.setText(title);
+        card.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent movieDetailsIntent = new Intent(MainActivity.this, MovieDetails.class);
+                movieDetailsIntent.putExtra("movie_details", movie.toString());
+                startActivity(movieDetailsIntent);
+            }
+        });
     }
 }
