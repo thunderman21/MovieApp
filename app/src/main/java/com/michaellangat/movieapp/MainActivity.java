@@ -6,15 +6,20 @@ import androidx.cardview.widget.CardView;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.text.Editable;
+import android.text.method.KeyListener;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
@@ -31,6 +36,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        EditText searchBox = (EditText) findViewById(R.id.movie_search);
+        searchBox.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if ((keyEvent.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (i == KeyEvent.KEYCODE_ENTER)) {
+                    // Perform action on key press
+                    String searchParams = searchBox.getText().toString();
+                    searchMovie(searchParams);
+                    return true;
+                }
+                return false;
+            }
+        });
         Ion.with(this)
                 .load("https://api.themoviedb.org/3/discover/movie?api_key=115ec20dbd8d761d14676f38f0858b23")
                 .asString()
@@ -52,7 +71,32 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-        TextView searchBox = (TextView) findViewById(R.id.movie_search);
+    }
+
+    private void searchMovie(String searchParams) {
+        GridLayout mainGrid = findViewById(R.id.grid_main);
+        mainGrid.removeAllViews();
+        Ion.with(this)
+                .load("https://api.themoviedb.org/3/search/movie?api_key=115ec20dbd8d761d14676f38f0858b23&query="+searchParams)
+                .asString()
+                .setCallback(new FutureCallback<String>() {
+                    @Override
+                    public void onCompleted(Exception e, String result) {
+
+                        try {
+                            JSONObject json = new JSONObject(result);
+                            JSONArray movies = json.getJSONArray("results");
+                            for (int i = 0; i<movies.length(); i++) {
+                                JSONObject movie = movies.getJSONObject(i);
+                                String movie_title = movie.getString("original_title");
+                                String movie_poster_url = movie.getString("poster_path");
+                                loadImage(movie_title, movie_poster_url, movie);
+                            }
+                        } catch (JSONException jsone){
+                            Log.d("Json", "Json error", jsone);
+                        }
+                    }
+                });
     }
 
 
